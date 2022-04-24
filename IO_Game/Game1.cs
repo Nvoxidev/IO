@@ -10,6 +10,8 @@ namespace IO_Game
         private SpriteBatch _spriteBatch;
 
         Player rover;
+        Sprite stone;
+        Sprite bgSky;
 
         public Game1()
         {
@@ -25,6 +27,8 @@ namespace IO_Game
         {
             // TODO: Add your initialization logic here
             rover = new Player();
+            stone = new Sprite();
+            bgSky = new Sprite();
             base.Initialize();
         }
 
@@ -33,8 +37,17 @@ namespace IO_Game
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-
+            bgSky= new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(1200, 630));
+            bgSky.LoadContent(Content);
+            
             rover.LoadContent(Content);
+
+            stone = new Sprite("sprites/StoneSet", new Point(0,550), new Point(800,50));
+            stone.LoadContent(Content);
+
+            
+
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -60,16 +73,19 @@ namespace IO_Game
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DeepSkyBlue);
 
             // TODO: Add your drawing code here
 
             _spriteBatch.Begin();
 
+            bgSky.Draw(this._spriteBatch, Color.White);
             rover.Draw(this._spriteBatch, Color.White);
+            stone.Draw(this._spriteBatch, Color.White);
+            
 
             _spriteBatch.End();
-
+            
             base.Draw(gameTime);
         }
     }
