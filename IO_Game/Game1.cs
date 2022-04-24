@@ -12,6 +12,7 @@ namespace IO_Game
         Player rover;
         Sprite stone;
         Sprite bgSky;
+        string kbrState;
 
         public Game1()
         {
@@ -44,10 +45,7 @@ namespace IO_Game
 
             stone = new Sprite("sprites/StoneSet", new Point(0,550), new Point(800,50));
             stone.LoadContent(Content);
-
-            
-
-
+                        
         }
 
         protected override void Update(GameTime gameTime)
@@ -57,17 +55,25 @@ namespace IO_Game
 
             // TODO: Add your update logic here
 
-            KeyboardState myKeyboard = Keyboard.GetState();
+            KeyboardState myKeyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
 
-            if (myKeyboard.IsKeyDown(Keys.Left))
+            if (myKeyboard.IsKeyDown(Keys.A))
             {
-                rover.Move(false);
+                rover.Move(kbrState = "l");
             }
-            else if (myKeyboard.IsKeyDown(Keys.Right))
+            else if (myKeyboard.IsKeyDown(Keys.D))
             {
-                rover.Move(true);
+                rover.Move(kbrState = "r");
             }
-
+            else if (Keyboard.HasBeenPressed(Keys.Space) == true)
+            {
+                    rover.Shoot(Content, rover.Location); 
+            }
+            foreach (var item in rover.drillBit)
+            {
+                item.MoveLeft();
+               
+            }
             base.Update(gameTime);
         }
 
@@ -80,9 +86,14 @@ namespace IO_Game
             _spriteBatch.Begin();
 
             bgSky.Draw(this._spriteBatch, Color.White);
+            foreach (var item in rover.drillBit)
+            {
+                item.Draw(this._spriteBatch, Color.White);
+            }
             rover.Draw(this._spriteBatch, Color.White);
             stone.Draw(this._spriteBatch, Color.White);
             
+           
 
             _spriteBatch.End();
             
