@@ -9,7 +9,7 @@ namespace IO_Game
 {
     class Player : Sprite
     {
-        public Player() :base("sprites/Rover_Idle", new Point(50, 483), new Point(116, 68)) 
+        public Player() :base("sprites/Rover_Idle", new Point(50, 437), new Point(116, 115)) 
         {
         
         }
