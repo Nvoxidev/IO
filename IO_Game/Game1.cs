@@ -37,7 +37,7 @@ namespace IO_Game
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // TODO: use Content to load your game content here
             bgSky= new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(1200, 630));
             bgSky.LoadContent(Content);
             
@@ -69,10 +69,18 @@ namespace IO_Game
             {
                     rover.Shoot(Content, rover.Location); 
             }
+            else if (Keyboard.HasBeenPressed(Keys.LeftShift) == true)
+            {
+                rover.PlantMine(Content, rover.Location);
+            }
             foreach (var item in rover.drillBit)
             {
                 item.MoveLeft();
                
+            }
+            foreach (var item in rover.mine)
+            {
+                item.Drop();
             }
             base.Update(gameTime);
         }
@@ -85,13 +93,17 @@ namespace IO_Game
 
             _spriteBatch.Begin();
 
-            bgSky.Draw(this._spriteBatch, Color.White);
+            bgSky.Draw(_spriteBatch, Color.White);
             foreach (var item in rover.drillBit)
             {
-                item.Draw(this._spriteBatch, Color.White);
+                item.Draw(_spriteBatch, Color.White);
             }
-            rover.Draw(this._spriteBatch, Color.White);
-            stone.Draw(this._spriteBatch, Color.White);
+            foreach (var item in rover.mine)
+            {
+                item.Draw(_spriteBatch, Color.White);
+            }
+            rover.Draw(_spriteBatch, Color.White);
+            stone.Draw(_spriteBatch, Color.White);
             
            
 

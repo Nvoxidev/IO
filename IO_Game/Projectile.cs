@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+
 
 namespace IO_Game
 {
@@ -17,12 +13,12 @@ namespace IO_Game
 
         public Projectile(ContentManager contentManager, Point location) : base("sprites/DrillBit", location, new Point(50,25))
         {
-            this.LoadContent(contentManager);
+            LoadContent(contentManager);
         }
 
         public void MoveLeft()
         {
-            this.Location = new Point(this.Location.X + 8, this.Location.Y);
+            Location = new Point(Location.X + 8, Location.Y);
         }
     }
 }
