@@ -6,19 +6,34 @@ namespace IO_Game
 {
     class Projectile:Sprite
     {
-        public Projectile(ContentManager contentManager) : this(contentManager, new Point())
+        public enum Direction { right, left }
+
+        public Projectile(ContentManager contentManager) : this(contentManager, new Point(), Direction.left)
         {
 
         }
 
-        public Projectile(ContentManager contentManager, Point location) : base("sprites/DrillBit", location, new Point(50,25))
+        public Projectile(ContentManager contentManager, Point location, Direction direction) : base("sprites/DrillBit", location + new Point (50,25), new Point(30,15))
         {
             LoadContent(contentManager);
         }
 
-        public void MoveLeft()
+        public void Move(Direction direction)
         {
-            Location = new Point(Location.X + 8, Location.Y);
+            switch (direction)
+            {
+                case Direction.right:
+                    Location = new Point(Location.X + 8, Location.Y);
+                    break;
+                case Direction.left:
+                    Location = new Point(Location.X - 8, Location.Y);
+                    break;
+                default:
+                    break;
+            }
+            
+
+
         }
     }
 }

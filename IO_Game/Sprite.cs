@@ -36,10 +36,8 @@ namespace IO_Game
 
         public string SourceImageName
         {
-            get
-            {
-                return this.sourceImageName;
-            }
+            get { return sourceImageName; }
+
         }
 
 
@@ -82,7 +80,7 @@ namespace IO_Game
         /// <param name="contentManager">Send the principal content manager of the Game</param>
         public void LoadContent(ContentManager contentManager)
         {
-            this.texture2D = contentManager.Load<Texture2D>(this.sourceImageName);
+            this.texture2D = contentManager.Load<Texture2D>(sourceImageName);
         }
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace IO_Game
 
         }
 
-        public Mine(ContentManager contentManager, Point location) : base("sprites/Mine", location, new Point(50, 25))
+        public Mine(ContentManager contentManager, Point location) : base("sprites/Mine", location + new Point(85,25), new Point(30, 15))
         {
             this.LoadContent(contentManager);
         }

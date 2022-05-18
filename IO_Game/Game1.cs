@@ -8,11 +8,18 @@ namespace IO_Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private SpriteFont _genericFont;
 
-        Player rover;
-        Sprite stone;
-        Sprite bgSky;
+        Player _rover;
+        Sprite _stone;
+        Sprite _bgSky;
+        Sprite _hud;
+        Sprite _bgStone;
+        Map _map;
+        Tiles _tiles;
         string kbrState;
+        int shotDirection;
+        int depth;
 
         public Game1()
         {
@@ -20,16 +27,21 @@ namespace IO_Game
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _graphics.PreferredBackBufferWidth = 800;
-            _graphics.PreferredBackBufferHeight = 600;
+            _graphics.PreferredBackBufferHeight = 700;
             _graphics.ApplyChanges();
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            rover = new Player();
-            stone = new Sprite();
-            bgSky = new Sprite();
+            _rover = new Player();
+            _stone = new Sprite();
+            _bgSky = new Sprite();
+            _bgStone = new Sprite();
+            _hud = new Sprite();
+            _map = new Map();
+            _tiles = new Tiles();
+
             base.Initialize();
         }
 
@@ -38,14 +50,35 @@ namespace IO_Game
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use Content to load your game content here
-            bgSky= new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(1200, 630));
-            bgSky.LoadContent(Content);
-            
-            rover.LoadContent(Content);
+            _genericFont = Content.Load<SpriteFont>("fonts/genericFont");
 
-            stone = new Sprite("sprites/StoneSet", new Point(0,550), new Point(800,50));
-            stone.LoadContent(Content);
-                        
+            _bgSky= new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(800, 600));
+            _bgSky.LoadContent(Content);
+ 
+            _bgStone= new Sprite("sprites/Stonebg", new Point(0, 400), new Point(800, 600));
+            _bgStone.LoadContent(Content);
+
+            _tiles.Content = Content;
+            _map.Generate(new int[,]
+            {
+                {0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0},
+                {1,2,1,3,1,1,1,0,1,1},
+                {1,2,1,3,1,1,1,0,0,1},
+                {1,2,1,3,3,1,1,1,0,1},
+                {1,2,1,3,1,1,1,1,1,1}
+            }, 80);
+
+            _stone = new Sprite("sprites/Stone", new Point(300,350), new Point(75,75));
+            _stone.LoadContent(Content);
+                                 
+            _rover.LoadContent(Content);
+                       
+            _hud = new Sprite("sprites/hud",new Point(0,0),new Point(800,55));
+            _hud.LoadContent(Content);
         }
 
         protected override void Update(GameTime gameTime)
@@ -57,31 +90,53 @@ namespace IO_Game
 
             KeyboardState myKeyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
 
+            if (myKeyboard.IsKeyDown(Keys.W))
+            {
+                _rover.Move(kbrState = "up");
+            }
             if (myKeyboard.IsKeyDown(Keys.A))
             {
-                rover.Move(kbrState = "l");
+                _rover.Move(kbrState = "left");
+                shotDirection = 1;
             }
-            else if (myKeyboard.IsKeyDown(Keys.D))
+            if (myKeyboard.IsKeyDown(Keys.S))
             {
-                rover.Move(kbrState = "r");
+                _rover.Move(kbrState = "down");
             }
-            else if (Keyboard.HasBeenPressed(Keys.Space) == true)
+            if (myKeyboard.IsKeyDown(Keys.D))
             {
-                    rover.Shoot(Content, rover.Location); 
+                _rover.Move(kbrState = "right");
             }
-            else if (Keyboard.HasBeenPressed(Keys.LeftShift) == true)
+            if (Keyboard.HasBeenPressed(Keys.Space) == true)
             {
-                rover.PlantMine(Content, rover.Location);
+                    _rover.Shoot(Content, _rover.Location, (Player.Direction) shotDirection); 
             }
-            foreach (var item in rover.drillBit)
+            if (Keyboard.HasBeenPressed(Keys.LeftShift) == true)
             {
-                item.MoveLeft();
-               
+                _rover.PlantMine(Content, _rover.Location);
             }
-            foreach (var item in rover.mine)
+
+            foreach (var item in _rover.drillBit)
+            {
+                if (Keyboard.HasBeenPressed(Keys.A))
+                {
+                    shotDirection = 1;
+                }
+                else
+                {
+                    shotDirection = 0;
+                }
+                    item.Move((Projectile.Direction)shotDirection);
+            }
+            foreach (var item in _rover.mine)
             {
                 item.Drop();
             }
+            
+            depth = (_rover.Location.Y - 270) / 64;
+
+
+
             base.Update(gameTime);
         }
 
@@ -93,20 +148,21 @@ namespace IO_Game
 
             _spriteBatch.Begin();
 
-            bgSky.Draw(_spriteBatch, Color.White);
-            foreach (var item in rover.drillBit)
+            _bgSky.Draw(_spriteBatch, Color.White);
+            _bgStone.Draw(_spriteBatch, Color.White);
+            _map.Draw(_spriteBatch);
+            foreach (var item in _rover.drillBit)
             {
                 item.Draw(_spriteBatch, Color.White);
             }
-            foreach (var item in rover.mine)
+            foreach (var item in _rover.mine)
             {
                 item.Draw(_spriteBatch, Color.White);
             }
-            rover.Draw(_spriteBatch, Color.White);
-            stone.Draw(_spriteBatch, Color.White);
+            _rover.Draw(_spriteBatch, Color.White);        
+            _hud.Draw(_spriteBatch, Color.White);
+            _spriteBatch.DrawString(_genericFont, "Depth: " + depth + "m", new Vector2(680, 13), Color.White);
             
-           
-
             _spriteBatch.End();
             
             base.Draw(gameTime);
