@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace IO_Game
 {
@@ -17,6 +18,7 @@ namespace IO_Game
         Sprite _bgStone;
         Map _map;
         Tiles _tiles;
+        Song _music;
         string kbrState;
         int shotDirection;
         int depth;
@@ -26,7 +28,7 @@ namespace IO_Game
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _graphics.PreferredBackBufferWidth = 800;
+            _graphics.PreferredBackBufferWidth = 750;
             _graphics.PreferredBackBufferHeight = 700;
             _graphics.ApplyChanges();
         }
@@ -50,6 +52,9 @@ namespace IO_Game
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use Content to load your game content here
+
+            //_music = Content.Load<Song>("audio/music");
+            
             _genericFont = Content.Load<SpriteFont>("fonts/genericFont");
 
             _bgSky= new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(800, 600));
@@ -61,19 +66,22 @@ namespace IO_Game
             _tiles.Content = Content;
             _map.Generate(new int[,]
             {
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0},
-                {1,2,1,3,1,1,1,0,1,1},
-                {1,2,1,3,1,1,1,0,0,1},
-                {1,2,1,3,3,1,1,1,0,1},
-                {1,2,1,3,1,1,1,1,1,1}
-            }, 80);
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 
-            _stone = new Sprite("sprites/Stone", new Point(300,350), new Point(75,75));
-            _stone.LoadContent(Content);
+            }, 50);
                                  
             _rover.LoadContent(Content);
                        
@@ -97,7 +105,6 @@ namespace IO_Game
             if (myKeyboard.IsKeyDown(Keys.A))
             {
                 _rover.Move(kbrState = "left");
-                shotDirection = 1;
             }
             if (myKeyboard.IsKeyDown(Keys.S))
             {
@@ -133,7 +140,7 @@ namespace IO_Game
                 item.Drop();
             }
             
-            depth = (_rover.Location.Y - 270) / 64;
+            depth = (_rover.Location.Y - 270) / 50;
 
 
 

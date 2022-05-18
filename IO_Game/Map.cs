@@ -9,6 +9,8 @@ namespace IO_Game
     class Map
     {
         private List<ColissionTiles> colissionTiles = new List<ColissionTiles>();
+        private Random _rnd;
+       
 
         public List<ColissionTiles> ColissionTiles
         {
@@ -31,7 +33,9 @@ namespace IO_Game
         {
         }
         public void Generate(int[,] map, int size)
-        {
+        { 
+            _rnd = new Random();
+            
             for (int x = 0; x < map.GetLength(1); x++)
             {
                 for (int y = 0; y < map.GetLength(0); y++)
@@ -39,7 +43,7 @@ namespace IO_Game
                     int number = map[y, x];
                     if (number > 0)
                     {
-                        ColissionTiles.Add(new ColissionTiles(number, new Rectangle(x * size, y * size, size, size)));
+                        ColissionTiles.Add(new ColissionTiles(_rnd.Next(1,4), new Rectangle(x * size, y * size, size, size)));
 
                         width = (x + 1) * size;
                         height = (y + 1) * size;
