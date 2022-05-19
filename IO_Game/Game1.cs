@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -19,6 +20,7 @@ namespace IO_Game
         Map _map;
         Tiles _tiles;
         Song _music;
+        SoundEffect effect;
         string kbrState;
         int shotDirection;
         int depth;
@@ -71,9 +73,9 @@ namespace IO_Game
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
+                {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
+                {0,0,0,0,0,0,0,0,0,1,1,1,1,1,0},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -85,8 +87,14 @@ namespace IO_Game
                                  
             _rover.LoadContent(Content);
                        
-            _hud = new Sprite("sprites/hud",new Point(0,0),new Point(800,55));
+            _hud = new Sprite("sprites/hud",new Point(0,0),new Point(750,55));
             _hud.LoadContent(Content);
+
+            _music = Content.Load<Song>("audio/Midnight Noir L");
+            MediaPlayer.Volume = 0.3f;
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(_music);
+            
         }
 
         protected override void Update(GameTime gameTime)
@@ -168,7 +176,7 @@ namespace IO_Game
             }
             _rover.Draw(_spriteBatch, Color.White);        
             _hud.Draw(_spriteBatch, Color.White);
-            _spriteBatch.DrawString(_genericFont, "Depth: " + depth + "m", new Vector2(680, 13), Color.White);
+            _spriteBatch.DrawString(_genericFont, "Depth: " + depth + "m", new Vector2(630, 13), Color.White);
             
             _spriteBatch.End();
             
