@@ -13,7 +13,7 @@ namespace IO_Game
         public List<Mine> mine;
         private Texture2D texture;
         private Vector2 velocity;
-        private Vector2 position = new Vector2(50, 327);
+        public Vector2 position = new Vector2(50, 327);
         private Rectangle rectangle;
         float x = 0;
         float y = 0;
