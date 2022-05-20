@@ -20,7 +20,10 @@ namespace IO_Game
         Map _map;
         Tiles _tiles;
         Song _music;
-        SoundEffect effect;
+        SoundEffect _sound;
+        int countdown = 0;
+        int countDuration = 100;
+        float currentTime = 0f;
         string kbrState;
         int shotDirection;
         int depth;
@@ -54,8 +57,6 @@ namespace IO_Game
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use Content to load your game content here
-
-            //_music = Content.Load<Song>("audio/music");
             
             _genericFont = Content.Load<SpriteFont>("fonts/genericFont");
 
@@ -73,9 +74,9 @@ namespace IO_Game
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                 {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0},
-                {0,0,0,0,0,0,0,0,0,1,1,1,1,1,0},
+                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+                {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
+                {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -85,7 +86,7 @@ namespace IO_Game
 
             }, 50);
                                  
-            _rover.LoadContent(Content);
+            _rover.Load(Content);
                        
             _hud = new Sprite("sprites/hud",new Point(0,0),new Point(750,55));
             _hud.LoadContent(Content);
@@ -94,7 +95,6 @@ namespace IO_Game
             MediaPlayer.Volume = 0.3f;
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_music);
-            
         }
 
         protected override void Update(GameTime gameTime)
@@ -106,33 +106,31 @@ namespace IO_Game
 
             KeyboardState myKeyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
 
-            if (myKeyboard.IsKeyDown(Keys.W))
-            {
-                _rover.Move(kbrState = "up");
-            }
-            if (myKeyboard.IsKeyDown(Keys.A))
-            {
-                _rover.Move(kbrState = "left");
-            }
-            if (myKeyboard.IsKeyDown(Keys.S))
-            {
-                _rover.Move(kbrState = "down");
-            }
-            if (myKeyboard.IsKeyDown(Keys.D))
-            {
-                _rover.Move(kbrState = "right");
-            }
+          
+            
+            
             if (Keyboard.HasBeenPressed(Keys.Space) == true)
             {
-                    _rover.Shoot(Content, _rover.Location, (Player.Direction) shotDirection); 
+                _sound = Content.Load<SoundEffect>("audio/drillBitShot");
+                _sound.Play();
+
+                _rover.Shoot(Content, _rover.Location, (Player.Direction)shotDirection);
             }
             if (Keyboard.HasBeenPressed(Keys.LeftShift) == true)
             {
                 _rover.PlantMine(Content, _rover.Location);
+                _sound = Content.Load<SoundEffect>("audio/mineShot");
+                _sound.Play(0.4f, 0.0f, 0.0f);
             }
-
+            foreach(ColissionTiles tile in _map.ColissionTiles) 
+            {
+                _rover.Colission(tile.rectangle,_map.Width, _map.Height);
+            }      
+            _rover.Update(gameTime);
+            
             foreach (var item in _rover.drillBit)
             {
+
                 if (Keyboard.HasBeenPressed(Keys.A))
                 {
                     shotDirection = 1;
@@ -141,17 +139,29 @@ namespace IO_Game
                 {
                     shotDirection = 0;
                 }
-                    item.Move((Projectile.Direction)shotDirection);
+                item.Move((Projectile.Direction)shotDirection);
             }
             foreach (var item in _rover.mine)
             {
                 item.Drop();
+            }    
+            if (_rover.Location.Y <= 340)
+            {
+                depth = 0;
+            }
+            else
+            {
+                depth = (_rover.Location.Y - 340) / 50;
             }
             
-            depth = (_rover.Location.Y - 270) / 50;
+            currentTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            countdown = (countDuration - (int)currentTime);
 
-
-
+            if (countdown <= 0)
+            {
+                countdown = 0;
+            }
+            
             base.Update(gameTime);
         }
 
@@ -174,10 +184,10 @@ namespace IO_Game
             {
                 item.Draw(_spriteBatch, Color.White);
             }
-            _rover.Draw(_spriteBatch, Color.White);        
+            _rover.Draw(_spriteBatch);        
             _hud.Draw(_spriteBatch, Color.White);
-            _spriteBatch.DrawString(_genericFont, "Depth: " + depth + "m", new Vector2(630, 13), Color.White);
-            
+            _spriteBatch.DrawString(_genericFont, "Depth: " + depth + "m", new Vector2(615, 14), Color.White);
+            _spriteBatch.DrawString(_genericFont, "Energy: " + countdown + "%" , new Vector2(16, 14), Color.White);
             _spriteBatch.End();
             
             base.Draw(gameTime);

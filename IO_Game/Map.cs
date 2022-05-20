@@ -10,16 +10,12 @@ namespace IO_Game
     {
         private List<ColissionTiles> colissionTiles = new List<ColissionTiles>();
         private Random _rnd;
-       
-
         public List<ColissionTiles> ColissionTiles
         {
             get { return colissionTiles; }
         }
-
         private int height;
         private int width;
-
         public int Width
         {
             get { return width; }
@@ -27,10 +23,6 @@ namespace IO_Game
         public int Height
         {
             get { return height; }
-        }
-
-        public Map()
-        {
         }
         public void Generate(int[,] map, int size)
         { 

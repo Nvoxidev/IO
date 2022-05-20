@@ -9,7 +9,8 @@ namespace IO_Game
     class Tiles
     {
         protected Texture2D texture;
-        private Rectangle rectangle;
+        public Rectangle rectangle;
+        public Rectangle[] rectangles = new Rectangle[0];
 
         public Rectangle Rectangle
         {
@@ -35,6 +36,7 @@ namespace IO_Game
         {
             texture = Content.Load<Texture2D>("sprites/tile" + i);
             this.Rectangle = newRectangle;
+            
         }
     }
 }

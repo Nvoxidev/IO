@@ -10,7 +10,13 @@ namespace IO_Game
 
         protected Texture2D texture2D;
 
-        protected Rectangle rectangle;
+         Rectangle rectangle;
+
+        public Rectangle MyRectangle
+        {
+            get { return rectangle; }
+            set { rectangle = value; }
+        }
 
         private Point location;
 
@@ -33,6 +39,8 @@ namespace IO_Game
             get { return size; }
             set { size = value; }
         }
+
+
 
         public string SourceImageName
         {
