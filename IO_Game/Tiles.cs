@@ -1,42 +1,68 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-
-
+using System;
+using System.Collections.Generic;
 
 namespace IO_Game
 {
     class Tiles
-    {
-        protected Texture2D texture;
-        public Rectangle rectangle;
-        public Rectangle[] rectangles = new Rectangle[0];
+    { 
+            public static List<Tile> tiles;
 
-        public Rectangle Rectangle
-        {
-            get { return rectangle; }
-            protected set { rectangle = value; }
-        }
+            public Tiles()
+            {
+                tiles = new List<Tile>();
+            }
 
-        private static ContentManager content;
-        public ContentManager Content
-        {
-            protected get { return content; }
-            set { content = value; }
-        }
+            public void LoadContent(ContentManager content)
+            {
+                try
+                {
+                    foreach (var item in tiles)
+                    {
+                        item.LoadContent(content);
+                    }
+                }
+                catch(Exception e)
+                {
+                    throw e;
+                }
+            }
 
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(texture, rectangle, Color.White);
+            public void Floor(Point location, int numveces)
+            {
+                AddWall(location.X, location.Y, numveces, true);
+            }
+
+            public void VerticalWall(Point location, int numveces)
+            {
+                AddWall(location.X, location.Y, numveces, false);
+            }
+
+            private void AddWall(int x, int y, int numveces, bool isHorizontal)
+            {
+                for (int i = 0; i < numveces; i++)
+                {
+                    tiles.Add(new Tile(new Point(45, 45), new Point(x, y)));
+                    if (isHorizontal)
+                    {
+                        x += 45;
+                    }
+                    else
+                    {
+                        y += 45;
+                    }
+                }
+            }
+
+            public void Draw(SpriteBatch sp)
+            {
+                foreach (var item in tiles)
+                {
+                    item.Draw(sp, Color.White);
+                }
+            }
         }
     }
-    class ColissionTiles : Tiles
-    {
-        public ColissionTiles(int i, Rectangle newRectangle)
-        {
-            texture = Content.Load<Texture2D>("sprites/tile" + i);
-            this.Rectangle = newRectangle;
-            
-        }
-    }
-}
+

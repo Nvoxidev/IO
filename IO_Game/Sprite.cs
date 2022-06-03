@@ -7,19 +7,14 @@ namespace IO_Game
     class Sprite
     {
         private string sourceImageName;
-
         protected Texture2D texture2D;
-
-         Rectangle rectangle;
-
+        public Rectangle rectangle;
         public Rectangle MyRectangle
         {
             get { return rectangle; }
             set { rectangle = value; }
         }
-
         private Point location;
-
         public Point Location
         {
             get
@@ -31,24 +26,17 @@ namespace IO_Game
                 location = value;
             }
         }
-
         private Point size;
-
         public Point Size
         {
             get { return size; }
             set { size = value; }
         }
-
-
-
         public string SourceImageName
         {
             get { return sourceImageName; }
 
         }
-
-
         /// <summary>
         /// OJO: If you call this overloaded constructor you wont be able to change it later
         /// In fact, you will have a default image displaying 'No Image'
@@ -57,7 +45,6 @@ namespace IO_Game
         {
 
         }
-
         /// <summary>
         /// Overloaded Constructor receiving the name of the external resource
         /// </summary>
@@ -67,7 +54,6 @@ namespace IO_Game
         {
 
         }
-
         /// <summary>
         /// Overloaded Constructor receiving name of the external resource, location and size
         /// </summary>
@@ -81,7 +67,6 @@ namespace IO_Game
             this.size = size;
             this.rectangle = new Rectangle(this.Location, this.Size);
         }
-
         /// <summary>
         /// This method must be called to load an external asset to the RAM Memory
         /// </summary>
@@ -90,7 +75,6 @@ namespace IO_Game
         {
             this.texture2D = contentManager.Load<Texture2D>(sourceImageName);
         }
-
         /// <summary>
         /// This method should be called to draw the sprite on the screen
         /// </summary>

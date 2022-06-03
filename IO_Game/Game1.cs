@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
+using System;
+using System.IO;
 
 namespace IO_Game
 {
@@ -11,186 +13,233 @@ namespace IO_Game
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private SpriteFont _genericFont;
-
+        private SpriteFont _endFont;
+        private SpriteFont _endFont2;
         Player _rover;
-        Sprite _stone;
+        Tiles _stoneTiles;
         Sprite _bgSky;
         Sprite _hud;
         Sprite _bgStone;
-        Map _map;
-        Tiles _tiles;
+        Sprite _goldStone;
+        Sprite _generator;
+        Sprite _bgEnd;
         Song _music;
         SoundEffect _sound;
-        int countdown = 0;
-        int countDuration = 100;
-        float currentTime = 0f;
+        Random _rand;
+        int probability;
+        int energy = 100;
+        bool gameOver = false;
         string kbrState;
-        int shotDirection;
-        int depth;
+        string alert = "";
+        int score;
 
+            
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            _graphics.PreferredBackBufferWidth = 750;
-            _graphics.PreferredBackBufferHeight = 700;
+            _graphics.PreferredBackBufferWidth = 810;
+            _graphics.PreferredBackBufferHeight = 945;
             _graphics.ApplyChanges();
         }
-
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             _rover = new Player();
-            _stone = new Sprite();
             _bgSky = new Sprite();
             _bgStone = new Sprite();
             _hud = new Sprite();
-            _map = new Map();
-            _tiles = new Tiles();
+            _stoneTiles = new Tiles();
+            _generator = new Sprite();
+            _goldStone = new Sprite();
+            _rand = new Random();
 
             base.Initialize();
         }
-
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use Content to load your game content here
-            
             _genericFont = Content.Load<SpriteFont>("fonts/genericFont");
+            
+            _endFont = Content.Load<SpriteFont>("fonts/endFont");
+            _endFont2 = Content.Load<SpriteFont>("fonts/endFont2");
 
-            _bgSky= new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(800, 600));
+            _bgSky = new Sprite("sprites/SpaceFinal", new Point(0, 0), new Point(810, 600));
             _bgSky.LoadContent(Content);
- 
-            _bgStone= new Sprite("sprites/Stonebg", new Point(0, 400), new Point(800, 600));
+
+            _bgStone = new Sprite("sprites/Stonebg", new Point(0, 300), new Point(810, 600));
             _bgStone.LoadContent(Content);
 
-            _tiles.Content = Content;
-            _map.Generate(new int[,]
-            {
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-                {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-                {0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-                {1,1,1,1,1,0,0,0,1,1,1,1,1,1,1},
-                {1,1,1,1,1,0,0,0,1,1,1,1,1,1,1},
-                {1,1,1,1,1,0,0,0,1,1,1,1,1,1,1},
-                {1,1,1,1,1,0,0,0,1,1,1,1,1,1,1},
-                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+            //1st floor
+            _stoneTiles.Floor(new Point(0, 300), 15);
+            //2nd floor
+            _stoneTiles.Floor(new Point(535, 420), 5);
+            _stoneTiles.Floor(new Point(0, 420), 10);
+            //3rd floor
+            _stoneTiles.Floor(new Point(225, 540), 11);
+            _stoneTiles.Floor(new Point(0, 540), 3);
+            //4th floor
+            _stoneTiles.Floor(new Point(135, 660), 9);
+            _stoneTiles.Floor(new Point(720, 660), 2);
+            //5th floor
+            _stoneTiles.Floor(new Point(225, 780), 13);
+            _stoneTiles.Floor(new Point(0, 780), 3);
+            //Final floor
+            _stoneTiles.Floor(new Point(-90, 900), 22);
+            
+            _stoneTiles.LoadContent(Content);
 
-            }, 50);
-                                 
-            _rover.Load(Content);
-                       
-            _hud = new Sprite("sprites/hud",new Point(0,0),new Point(750,55));
+            _goldStone = new Sprite("sprites/GoldStone", new Point(765, 855), new Point(45, 45));
+            _goldStone.LoadContent(Content);
+
+            _generator = new Sprite("sprites/generator", new Point(20, 170), new Point(130, 130));
+            _generator.LoadContent(Content);
+            
+            _rover.LoadContent(Content);
+            
+            _hud = new Sprite("sprites/hud", new Point(0, 0), new Point(810, 55));
             _hud.LoadContent(Content);
+
+            _bgEnd = new Sprite("sprites/bgEnd", new Point(0, 0), new Point(810, 945));
+            _bgEnd.LoadContent(Content);
 
             _music = Content.Load<Song>("audio/Midnight Noir L");
             MediaPlayer.Volume = 0.3f;
             MediaPlayer.IsRepeating = true;
             MediaPlayer.Play(_music);
         }
-
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
-
-            KeyboardState myKeyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
-
-          
-            
-            
-            if (Keyboard.HasBeenPressed(Keys.Space) == true)
+            if (gameOver == false)
             {
-                _sound = Content.Load<SoundEffect>("audio/drillBitShot");
-                _sound.Play();
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    Exit();
 
-                _rover.Shoot(Content, _rover.Location, (Player.Direction)shotDirection);
-            }
-            if (Keyboard.HasBeenPressed(Keys.LeftShift) == true)
-            {
-                _rover.PlantMine(Content, _rover.Location);
-                _sound = Content.Load<SoundEffect>("audio/mineShot");
-                _sound.Play(0.4f, 0.0f, 0.0f);
-            }
-            foreach(ColissionTiles tile in _map.ColissionTiles) 
-            {
-                _rover.Colission(tile.rectangle,_map.Width, _map.Height);
-            }      
-            _rover.Update(gameTime);
-            
-            foreach (var item in _rover.drillBit)
-            {
 
-                if (Keyboard.HasBeenPressed(Keys.A))
+                if (Keyboard.IsPressed(Keys.W) == true)
                 {
-                    shotDirection = 1;
+                    _rover.Move(Player.Direction.Up);
                 }
-                else
+                if (Keyboard.IsPressed(Keys.A) == true)
                 {
-                    shotDirection = 0;
-                }
-                item.Move((Projectile.Direction)shotDirection);
-            }
-            foreach (var item in _rover.mine)
-            {
-                item.Drop();
-            }    
-            
-            if (_rover.position.Y <= 340)
-            {
-                depth = 0;
-            }
-            else
-            {
-                depth = ((int)(_rover.position.Y) - 340) / 50;
-            }
-            
-            currentTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            countdown = (countDuration - (int)currentTime);
+                    _rover.Move(Player.Direction.Left);
 
-            if (countdown <= 0)
-            {
-                countdown = 0;
+                }
+                if (Keyboard.IsPressed(Keys.S) == true)
+                {
+                    _rover.Move(Player.Direction.Down);
+
+                }
+                if (Keyboard.IsPressed(Keys.D) == true)
+                {
+                    _rover.Move(Player.Direction.Right);
+                }
+                if (Keyboard.HasBeenPressed(Keys.Space) == true)
+                {
+                    _sound = Content.Load<SoundEffect>("audio/drillBitShot");
+                    _sound.Play();
+
+                    _rover.Shoot(Content, _rover.Location);
+                }
+
+                _rover.Location = new Point(Wrap.WrapAround(_rover.Location.X, 0 - 80, 800), _rover.Location.Y);
+
+                foreach (var item in _rover.drillBit)
+                {
+                    item.Move();
+
+                    if (item.rectangle.Intersects(_goldStone.rectangle))
+                    {
+                        score += 1;
+                    }
+                }
+
+                probability = _rand.Next(1, 51);
+                if (probability == 1)
+                {
+                    energy--;
+                }
+                else if (probability == 50)
+                {
+                    energy -= 2;
+                }
+
+                if (energy <= 0)
+                {
+                    energy = 0;
+                    gameOver = true;
+                }
+                if (_rover.rectangle.Intersects(_generator.MyRectangle))
+                {
+                    if (Keyboard.HasBeenPressed(Keys.F) == true)
+                    {
+                        try
+                        {
+                            if (! File.Exists("Content/score.txt"))
+                            {
+                                File.Create("Content/score.txt");
+                            }
+
+                            File.WriteAllText("D:/Code/Git-hub/IO/IO_Game/Content/score.txt", score.ToString() + "\n");
+                        }
+                        catch (Exception e)
+                        {
+                            alert = e.Message;
+                        }
+                        gameOver = true;
+                        score *= 2;
+                    }
+                    if (energy <= 98)
+                    {
+                        energy += 2;
+                    }
+                }
             }
-            
             base.Update(gameTime);
         }
-
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.DeepSkyBlue);
-
-            // TODO: Add your drawing code here
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
 
             _bgSky.Draw(_spriteBatch, Color.White);
             _bgStone.Draw(_spriteBatch, Color.White);
-            _map.Draw(_spriteBatch);
             foreach (var item in _rover.drillBit)
             {
                 item.Draw(_spriteBatch, Color.White);
             }
-            foreach (var item in _rover.mine)
-            {
-                item.Draw(_spriteBatch, Color.White);
-            }
-            _rover.Draw(_spriteBatch);        
+            _stoneTiles.Draw(_spriteBatch);
+            _generator.Draw(_spriteBatch, Color.White);
+            _goldStone.Draw(_spriteBatch, Color.White);
+            _rover.Draw(_spriteBatch, Color.White);
             _hud.Draw(_spriteBatch, Color.White);
-            _spriteBatch.DrawString(_genericFont, "Depth: " + depth + "m", new Vector2(615, 14), Color.White);
-            _spriteBatch.DrawString(_genericFont, "Energy: " + countdown + "%" , new Vector2(16, 14), Color.White);
+            if (_rover.rectangle.Intersects(_generator.MyRectangle))
+            {
+                _spriteBatch.DrawString(_genericFont, "Press \"F\" to pack up ", new Vector2(70, 130), Color.White);
+            }
+            _spriteBatch.DrawString(_genericFont, "Score: " + score, new Vector2(670, 17), Color.White);
+            _spriteBatch.DrawString(_genericFont, "Energy: " + energy + "%", new Vector2(25, 17), Color.White);
+
+            if (gameOver == true)
+            {
+
+                _bgEnd.Draw(_spriteBatch, Color.White);
+                _spriteBatch.DrawString(_endFont, "Final score: " + score, new Vector2(240, 200), Color.White);
+                _spriteBatch.DrawString(_endFont2, "High scores", new Vector2(315, 300), Color.White);
+      
+                if (alert != "")
+                {
+                    _spriteBatch.DrawString(_endFont2, "Score not saved", new Vector2(285, 480), Color.White);
+                }
+                else 
+                {
+                    _spriteBatch.DrawString(_endFont2, "Score saved Successfully", new Vector2(215, 480), Color.White);
+                }
+            }
             _spriteBatch.End();
-            
+
             base.Draw(gameTime);
         }
     }
